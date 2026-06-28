@@ -7,6 +7,9 @@ SCHET is a multiplayer game database application developed using Java, JavaFX, J
 
 The system allows users to add and manage player profiles, record match results, and automatically update leaderboard rankings through MySQL triggers. By combining object-oriented programming principles with relational database management, SCHET demonstrates how desktop applications can efficiently interact with databases to automate game data processing while maintaining data integrity and consistency.
 
+<img width="1243" height="882" alt="Screenshot 2026-06-28 120942" src="https://github.com/user-attachments/assets/854c5df4-423a-4f7d-b72d-8c97b423d8db" />
+
+
 # What Does SCHET Do?
 SCHET provides a centralized system for managing multiplayer game data. Instead of manually maintaining player records and scores, the application automates these tasks through a graphical desktop interface connected to a relational database.
 
