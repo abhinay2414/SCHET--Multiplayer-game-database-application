@@ -1,0 +1,371 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<?import javafx.scene.control.*?>
+<?import javafx.scene.layout.*?>
+<?import javafx.geometry.Insets?>
+
+<!--
+    main.fxml — the complete UI layout for MultiGame DB.
+
+    Structure:
+      BorderPane (root)
+        ├── top:    HBox  — navigation bar with 3 tab buttons
+        └── center: StackPane — holds all 3 panels stacked
+              ├── VBox panelAdd         — Add Result form
+              ├── VBox panelResults     — Match History table
+              └── VBox panelLeaderboard — Leaderboard table
+
+    The controller is MainController.java, linked via fx:controller.
+    All fx:id values must match @FXML field names in the controller.
+    All onAction="#method" values must match @FXML method names.
+
+    Color scheme (dark gaming theme):
+      Background:  #1a1a2e  (deep navy)
+      Nav bar:     #16213e  (darker navy)
+      Cards:       #0f3460  (medium navy)
+      Accent:      #e94560  (red)
+      Success:     #4ecca3  (teal)
+      Text:        #ffffff / #cccccc / #999999
+-->
+
+<BorderPane xmlns:fx="http://javafx.com/fxml/1"
+            fx:controller="com.multigame.controller.MainController"
+            prefWidth="1000" prefHeight="680"
+            style="-fx-background-color:#1a1a2e;">
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         TOP NAVIGATION BAR
+         Three buttons switch between the three panels.
+         The active button is highlighted red by highlightNav() in Java.
+    ════════════════════════════════════════════════════════════════════ -->
+    <top>
+        <HBox style="-fx-background-color:#16213e;
+                     -fx-padding:0 20 0 20;
+                     -fx-alignment:CENTER_LEFT;
+                     -fx-border-color:#e94560;
+                     -fx-border-width:0 0 2 0;">
+
+            <!-- App title / logo text -->
+            <Label text="⚔  MultiGame DB"
+                   style="-fx-font-size:20px;
+                          -fx-text-fill:#e94560;
+                          -fx-font-weight:bold;
+                          -fx-padding:14 30 14 0;"/>
+
+            <!-- Spacer pushes buttons to the right -->
+            <Region HBox.hgrow="ALWAYS"/>
+
+            <!-- Tab: Add Result -->
+            <Button fx:id="btnTabAdd"
+                    text="➕  Add Result"
+                    onAction="#showAddTab"
+                    style="-fx-background-color:transparent;
+                           -fx-text-fill:#999;
+                           -fx-font-size:14px;
+                           -fx-padding:14 20;
+                           -fx-cursor:hand;
+                           -fx-background-radius:0;"/>
+
+            <!-- Tab: Match History -->
+            <Button fx:id="btnTabResults"
+                    text="📋  Match History"
+                    onAction="#showResultsTab"
+                    style="-fx-background-color:transparent;
+                           -fx-text-fill:#999;
+                           -fx-font-size:14px;
+                           -fx-padding:14 20;
+                           -fx-cursor:hand;
+                           -fx-background-radius:0;"/>
+
+            <!-- Tab: Leaderboard -->
+            <Button fx:id="btnTabLeaderboard"
+                    text="🏆  Leaderboard"
+                    onAction="#showLeaderboardTab"
+                    style="-fx-background-color:transparent;
+                           -fx-text-fill:#999;
+                           -fx-font-size:14px;
+                           -fx-padding:14 20;
+                           -fx-cursor:hand;
+                           -fx-background-radius:0;"/>
+        </HBox>
+    </top>
+
+    <!-- ═══════════════════════════════════════════════════════════════
+         MAIN CONTENT — StackPane holds all 3 panels
+         Only one panel is visible at a time (managed by switchPanel())
+    ════════════════════════════════════════════════════════════════════ -->
+    <center>
+        <StackPane fx:id="contentStack"
+                   style="-fx-background-color:#1a1a2e;">
+
+            <!-- ─────────────────────────────────────────────────────
+                 PANEL 1: ADD RESULT
+                 Default visible panel.
+                 A form where the user enters match performance data.
+            ──────────────────────────────────────────────────────── -->
+            <VBox fx:id="panelAdd"
+                  spacing="20"
+                  visible="true"
+                  managed="true"
+                  style="-fx-padding:36 40;
+                         -fx-background-color:#1a1a2e;">
+
+                <!-- Panel heading -->
+                <Label text="Record a Match Result"
+                       style="-fx-font-size:24px;
+                              -fx-text-fill:#e94560;
+                              -fx-font-weight:bold;"/>
+
+                <Label text="Fill in the details below and click Save."
+                       style="-fx-font-size:13px; -fx-text-fill:#777;"/>
+
+                <!-- Form card -->
+                <VBox style="-fx-background-color:#0f3460;
+                             -fx-background-radius:10;
+                             -fx-padding:28 32;
+                             -fx-max-width:560;">
+
+                    <GridPane hgap="20" vgap="18">
+                        <columnConstraints>
+                            <ColumnConstraints minWidth="140" maxWidth="140"/>
+                            <ColumnConstraints minWidth="300" hgrow="ALWAYS"/>
+                        </columnConstraints>
+
+                        <!-- Row 0: Player dropdown -->
+                        <Label text="Player"
+                               GridPane.rowIndex="0" GridPane.columnIndex="0"
+                               style="-fx-text-fill:#ccc; -fx-font-size:14px; -fx-font-weight:bold;"/>
+                        <ComboBox fx:id="cbPlayer"
+                                  GridPane.rowIndex="0" GridPane.columnIndex="1"
+                                  prefWidth="300"
+                                  promptText="Select a player..."
+                                  style="-fx-background-color:#1a1a2e;
+                                         -fx-text-fill:white;
+                                         -fx-font-size:13px;
+                                         -fx-background-radius:6;"/>
+
+                        <!-- Row 1: Match ID -->
+                        <Label text="Match ID"
+                               GridPane.rowIndex="1" GridPane.columnIndex="0"
+                               style="-fx-text-fill:#ccc; -fx-font-size:14px; -fx-font-weight:bold;"/>
+                        <TextField fx:id="tfMatchID"
+                                   GridPane.rowIndex="1" GridPane.columnIndex="1"
+                                   promptText="e.g.  2001"
+                                   style="-fx-background-color:#1a1a2e;
+                                          -fx-text-fill:white;
+                                          -fx-prompt-text-fill:#555;
+                                          -fx-font-size:13px;
+                                          -fx-background-radius:6;
+                                          -fx-padding:8 12;"/>
+
+                        <!-- Row 2: Match Date -->
+                        <Label text="Match Date"
+                               GridPane.rowIndex="2" GridPane.columnIndex="0"
+                               style="-fx-text-fill:#ccc; -fx-font-size:14px; -fx-font-weight:bold;"/>
+                        <DatePicker fx:id="dpMatchDate"
+                                    GridPane.rowIndex="2" GridPane.columnIndex="1"
+                                    prefWidth="300"
+                                    style="-fx-background-color:#1a1a2e;
+                                           -fx-font-size:13px;
+                                           -fx-background-radius:6;"/>
+
+                        <!-- Row 3: Score -->
+                        <Label text="Score"
+                               GridPane.rowIndex="3" GridPane.columnIndex="0"
+                               style="-fx-text-fill:#ccc; -fx-font-size:14px; -fx-font-weight:bold;"/>
+                        <TextField fx:id="tfScore"
+                                   GridPane.rowIndex="3" GridPane.columnIndex="1"
+                                   promptText="e.g.  1500"
+                                   style="-fx-background-color:#1a1a2e;
+                                          -fx-text-fill:white;
+                                          -fx-prompt-text-fill:#555;
+                                          -fx-font-size:13px;
+                                          -fx-background-radius:6;
+                                          -fx-padding:8 12;"/>
+
+                        <!-- Row 4: Kills -->
+                        <Label text="Kills"
+                               GridPane.rowIndex="4" GridPane.columnIndex="0"
+                               style="-fx-text-fill:#ccc; -fx-font-size:14px; -fx-font-weight:bold;"/>
+                        <TextField fx:id="tfKills"
+                                   GridPane.rowIndex="4" GridPane.columnIndex="1"
+                                   promptText="e.g.  12"
+                                   style="-fx-background-color:#1a1a2e;
+                                          -fx-text-fill:white;
+                                          -fx-prompt-text-fill:#555;
+                                          -fx-font-size:13px;
+                                          -fx-background-radius:6;
+                                          -fx-padding:8 12;"/>
+
+                        <!-- Row 5: Deaths -->
+                        <Label text="Deaths"
+                               GridPane.rowIndex="5" GridPane.columnIndex="0"
+                               style="-fx-text-fill:#ccc; -fx-font-size:14px; -fx-font-weight:bold;"/>
+                        <TextField fx:id="tfDeaths"
+                                   GridPane.rowIndex="5" GridPane.columnIndex="1"
+                                   promptText="e.g.  4"
+                                   style="-fx-background-color:#1a1a2e;
+                                          -fx-text-fill:white;
+                                          -fx-prompt-text-fill:#555;
+                                          -fx-font-size:13px;
+                                          -fx-background-radius:6;
+                                          -fx-padding:8 12;"/>
+
+                        <!-- Row 6: Rank Position -->
+                        <Label text="Rank Position"
+                               GridPane.rowIndex="6" GridPane.columnIndex="0"
+                               style="-fx-text-fill:#ccc; -fx-font-size:14px; -fx-font-weight:bold;"/>
+                        <TextField fx:id="tfRank"
+                                   GridPane.rowIndex="6" GridPane.columnIndex="1"
+                                   promptText="e.g.  1  (1 = first place)"
+                                   style="-fx-background-color:#1a1a2e;
+                                          -fx-text-fill:white;
+                                          -fx-prompt-text-fill:#555;
+                                          -fx-font-size:13px;
+                                          -fx-background-radius:6;
+                                          -fx-padding:8 12;"/>
+                    </GridPane>
+
+                    <!-- Spacing before buttons -->
+                    <Region prefHeight="10"/>
+
+                    <!-- Action buttons -->
+                    <HBox spacing="14">
+                        <Button text="💾   Save Result"
+                                onAction="#saveMatchResult"
+                                style="-fx-background-color:#e94560;
+                                       -fx-text-fill:white;
+                                       -fx-font-size:14px;
+                                       -fx-font-weight:bold;
+                                       -fx-background-radius:7;
+                                       -fx-padding:10 28;
+                                       -fx-cursor:hand;"/>
+
+                        <Button text="✖   Clear"
+                                onAction="#clearForm"
+                                style="-fx-background-color:#1a1a2e;
+                                       -fx-text-fill:#aaa;
+                                       -fx-font-size:14px;
+                                       -fx-background-radius:7;
+                                       -fx-padding:10 24;
+                                       -fx-cursor:hand;
+                                       -fx-border-color:#333;
+                                       -fx-border-radius:7;"/>
+                    </HBox>
+
+                    <!-- Status message (success green or error red) -->
+                    <Region prefHeight="6"/>
+                    <Label fx:id="lblStatus"
+                           text=""
+                           wrapText="true"
+                           style="-fx-font-size:13px; -fx-text-fill:#4ecca3; -fx-font-weight:bold;"/>
+
+                </VBox>
+            </VBox>
+
+            <!-- ─────────────────────────────────────────────────────
+                 PANEL 2: MATCH HISTORY
+                 Hidden by default. Shows a searchable table of all
+                 match results joined with player names + match dates.
+            ──────────────────────────────────────────────────────── -->
+            <VBox fx:id="panelResults"
+                  spacing="16"
+                  visible="false"
+                  managed="false"
+                  style="-fx-padding:36 40;
+                         -fx-background-color:#1a1a2e;">
+
+                <Label text="Match History"
+                       style="-fx-font-size:24px;
+                              -fx-text-fill:#e94560;
+                              -fx-font-weight:bold;"/>
+
+                <!-- Search bar row -->
+                <HBox spacing="12" style="-fx-alignment:CENTER_LEFT;">
+                    <TextField fx:id="tfSearch"
+                               prefWidth="280"
+                               promptText="🔍  Search by player name..."
+                               style="-fx-background-color:#0f3460;
+                                      -fx-text-fill:white;
+                                      -fx-prompt-text-fill:#555;
+                                      -fx-font-size:13px;
+                                      -fx-background-radius:7;
+                                      -fx-padding:8 12;"/>
+
+                    <Button text="Search"
+                            onAction="#searchResults"
+                            style="-fx-background-color:#e94560;
+                                   -fx-text-fill:white;
+                                   -fx-font-weight:bold;
+                                   -fx-background-radius:7;
+                                   -fx-padding:8 20;
+                                   -fx-cursor:hand;"/>
+
+                    <Button text="Show All"
+                            onAction="#loadAllResults"
+                            style="-fx-background-color:#0f3460;
+                                   -fx-text-fill:#aaa;
+                                   -fx-background-radius:7;
+                                   -fx-padding:8 20;
+                                   -fx-cursor:hand;
+                                   -fx-border-color:#333;
+                                   -fx-border-radius:7;"/>
+                </HBox>
+
+                <!-- Match results table -->
+                <TableView fx:id="tableResults"
+                           VBox.vgrow="ALWAYS"
+                           style="-fx-background-color:#0f3460;
+                                  -fx-background-radius:10;
+                                  -fx-table-cell-border-color:#1a1a2e;">
+                    <columns>
+                        <TableColumn fx:id="colMatchID"  text="Match ID"     prefWidth="90"/>
+                        <TableColumn fx:id="colUsername" text="Player"       prefWidth="180"/>
+                        <TableColumn fx:id="colDate"     text="Date"         prefWidth="120"/>
+                        <TableColumn fx:id="colScore"    text="Score"        prefWidth="90"/>
+                        <TableColumn fx:id="colKills"    text="Kills"        prefWidth="80"/>
+                        <TableColumn fx:id="colDeaths"   text="Deaths"       prefWidth="80"/>
+                        <TableColumn fx:id="colRank"     text="Rank"         prefWidth="80"/>
+                    </columns>
+                </TableView>
+            </VBox>
+
+            <!-- ─────────────────────────────────────────────────────
+                 PANEL 3: LEADERBOARD
+                 Hidden by default. Shows top 50 players by TotalPoints.
+                 TotalPoints is kept up to date by the MySQL trigger.
+            ──────────────────────────────────────────────────────── -->
+            <VBox fx:id="panelLeaderboard"
+                  spacing="16"
+                  visible="false"
+                  managed="false"
+                  style="-fx-padding:36 40;
+                         -fx-background-color:#1a1a2e;">
+
+                <Label text="🏆  Leaderboard  —  Top 50 Players"
+                       style="-fx-font-size:24px;
+                              -fx-text-fill:#e94560;
+                              -fx-font-weight:bold;"/>
+
+                <Label text="Updated automatically after every match result is saved."
+                       style="-fx-font-size:13px; -fx-text-fill:#777;"/>
+
+                <!-- Leaderboard table -->
+                <TableView fx:id="tableLeaderboard"
+                           VBox.vgrow="ALWAYS"
+                           style="-fx-background-color:#0f3460;
+                                  -fx-background-radius:10;
+                                  -fx-table-cell-border-color:#1a1a2e;">
+                    <columns>
+                        <TableColumn fx:id="colLbRank"   text="Global Rank"   prefWidth="120"/>
+                        <TableColumn fx:id="colLbPlayer" text="Player"        prefWidth="220"/>
+                        <TableColumn fx:id="colLbPoints" text="Total Points"  prefWidth="150"/>
+                        <TableColumn fx:id="colLbID"     text="Player ID"     prefWidth="100"/>
+                    </columns>
+                </TableView>
+            </VBox>
+
+        </StackPane>
+    </center>
+
+</BorderPane>
